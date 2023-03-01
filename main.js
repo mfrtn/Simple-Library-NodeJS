@@ -109,7 +109,8 @@ route.delete("/books", (req, res) => {
         return value.id !== book.id;
       });
     }
-    res.json(db.Books);
+    res.writeHead(StatusCodes.NO_CONTENT, contentTypes.json);
+    res.json({ message: "Book has been deleted" });
   } else {
     res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
     result.error = true;
