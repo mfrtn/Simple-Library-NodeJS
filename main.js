@@ -29,7 +29,7 @@ route.get("/about", (req, res) => {
   res.end("About");
 });
 
-route.get("/books", (req, res) => {
+function findBookObject(req, res) {
   const result = {};
 
   if (req.query) {
@@ -39,12 +39,23 @@ route.get("/books", (req, res) => {
 
     if (output.length >= 1) {
       res.writeHead(StatusCodes.OK, contentTypes.json);
-      res.json(output[0], res);
+      return output[0];
     } else {
       res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
       result.error = true;
       result.message = "we can't find any books with your current query";
-      res.json(result);
+      return res.json(result);
+    }
+  } else {
+    return null;
+  }
+}
+
+route.get("/books", (req, res) => {
+  if (req.query) {
+    const output = findBookObject(req, res);
+    if (output) {
+      res.json(output);
     }
   } else {
     res.writeHead(StatusCodes.OK, contentTypes.json);
@@ -54,7 +65,56 @@ route.get("/books", (req, res) => {
         author: book.author,
       };
     });
-    res.json(output, res);
+    res.json(output);
+  }
+});
+
+route.put("/books", (req, res) => {
+  const body = req.body;
+  const result = {};
+
+  if (req.query) {
+    const book = findBookObject(req, res);
+    if (book) {
+      if (!body) {
+        res.writeHead(StatusCodes.OK, contentTypes.json);
+        result.error = true;
+        target;
+        result.message = "for update a book please send data!";
+        return res.json(result);
+      } else {
+        for (const key in body) {
+          if (Object.hasOwnProperty.call(book, key)) {
+            book[key] = body[key];
+          }
+        }
+        return res.json(book);
+      }
+    }
+  } else {
+    res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+    result.error = true;
+    result.message = "we can't find any books with your current query";
+    return res.json(result);
+  }
+});
+
+route.delete("/books", (req, res) => {
+  const result = {};
+
+  if (req.query) {
+    const book = findBookObject(req, res);
+    if (book) {
+      db.Books = db.Books.filter((value) => {
+        return value.id !== book.id;
+      });
+    }
+    res.json(db.Books);
+  } else {
+    res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+    result.error = true;
+    result.message = "we can't find any books with your current query";
+    return res.json(result);
   }
 });
 

@@ -38,7 +38,7 @@ exports.handler = async (req, res) => {
   } catch (error) {
     console.log("ERROR OCCURED", error.message);
     res.writeHead(StatusCodes.NOT_FOUND);
-    res.end(error.message);
+    res.end("The Page you are looking for is not availabe");
   }
 };
 
