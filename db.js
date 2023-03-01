@@ -123,11 +123,11 @@ exports.Renting = [
     rent_date: "2023-02-01",
     rent_days: 5,
   },
-  {
-    id: 2,
-    book_id: 2,
-    user_id: 3,
-    rent_date: "2023-02-10",
-    rent_days: 5,
-  },
+  // {
+  //   id: 2,
+  //   book_id: 2,
+  //   user_id: 3,
+  //   rent_date: "2023-02-10",
+  //   rent_days: 5,
+  // },
 ];

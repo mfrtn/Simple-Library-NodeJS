@@ -33,3 +33,11 @@ exports.parseJsonBody = (req) => {
 exports.jsonSerialize = (data, res) => {
   res.end(JSON.stringify(data));
 };
+
+exports.parseQueryFromUrl = (query) => {
+  const queryObj = query.split("&").reduce((acc, cur) => {
+    const [key, value] = cur.split("=");
+    return { ...acc, [key]: value };
+  }, {});
+  return queryObj;
+};

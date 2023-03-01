@@ -18,7 +18,13 @@ const routing = {
 exports.handler = async (req, res) => {
   try {
     req.path = url.parse(req.url).pathname;
-    req.query = url.parse(req.url).query;
+    query = url.parse(req.url).query;
+
+    req.query = null;
+    if (query) {
+      req.query = utils.parseQueryFromUrl(query);
+    }
+
     res.json = (data) => {
       utils.jsonSerialize(data, res);
     };
@@ -32,7 +38,7 @@ exports.handler = async (req, res) => {
   } catch (error) {
     console.log("ERROR OCCURED");
     res.writeHead(StatusCodes.NOT_FOUND);
-    res.end("NOT FOUND");
+    res.end(error.message);
   }
 };
 

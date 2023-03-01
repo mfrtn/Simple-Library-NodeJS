@@ -30,20 +30,37 @@ route.get("/about", (req, res) => {
 });
 
 route.get("/books", (req, res) => {
-  // console.log(req.query.split("="));
-  res.writeHead(StatusCodes.OK, contentTypes.json);
-  const output = db.Books.map((book) => {
-    return {
-      title: book.title,
-      author: book.author,
-    };
-  });
-  res.json(output, res);
+  const result = {};
+
+  if (req.query) {
+    const output = db.Books.filter((value) => {
+      return value.id === parseInt(req.query.id);
+    });
+
+    if (output.length >= 1) {
+      res.writeHead(StatusCodes.OK, contentTypes.json);
+      res.json(output[0], res);
+    } else {
+      res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+      result.error = true;
+      result.message = "we can't find any books with your current query";
+      res.json(result);
+    }
+  } else {
+    const output = db.Books.map((book) => {
+      return {
+        title: book.title,
+        author: book.author,
+      };
+    });
+    res.json(output, res);
+  }
 });
 
 route.post("/books", (req, res) => {
   const body = req.body;
-  const result = null;
+  const result = {};
+
   if (!body) {
     res.writeHead(StatusCodes.OK, contentTypes.json);
     result.error = true;
@@ -67,17 +84,33 @@ route.post("/books", (req, res) => {
   }
 });
 
+route.post("/renting", (req, res) => {
+  const body = req.body;
+  const result = {};
+
+  if (!body) {
+    res.writeHead(StatusCodes.OK, contentTypes.json);
+    result.error = true;
+    result.message = "for creating a new renting please send data!";
+    res.json(result);
+  } else {
+    const { book_id, user_id, rent_date, rent_days } = body;
+    console.log(body);
+    const rent = {
+      id: db.Renting.length,
+      book_id: book_id,
+      user_id: user_id,
+      rent_date: rent_date,
+      rent_days: rent_days,
+    };
+    db.Renting.push(rent);
+    res.writeHead(StatusCodes.OK, contentTypes.json);
+    res.json(rent);
+  }
+});
+
 const server = http.createServer(route.handler);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-// http
-//   .createServer((req, res) => {
-//     console.log(req.method);
-//     res.end("Hello World!");
-//   })
-//   .listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-//   });
