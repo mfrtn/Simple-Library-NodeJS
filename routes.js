@@ -36,7 +36,7 @@ exports.handler = async (req, res) => {
 
     routing[req.method][req.path](req, res);
   } catch (error) {
-    console.log("ERROR OCCURED");
+    console.log("ERROR OCCURED", error.message);
     res.writeHead(StatusCodes.NOT_FOUND);
     res.end(error.message);
   }

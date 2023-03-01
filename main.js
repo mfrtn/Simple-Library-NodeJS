@@ -47,6 +47,7 @@ route.get("/books", (req, res) => {
       res.json(result);
     }
   } else {
+    res.writeHead(StatusCodes.OK, contentTypes.json);
     const output = db.Books.map((book) => {
       return {
         title: book.title,
@@ -95,7 +96,6 @@ route.post("/renting", (req, res) => {
     res.json(result);
   } else {
     const { book_id, user_id, rent_date, rent_days } = body;
-    console.log(body);
     const rent = {
       id: db.Renting.length,
       book_id: book_id,
