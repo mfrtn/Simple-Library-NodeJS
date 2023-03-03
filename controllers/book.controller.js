@@ -100,7 +100,7 @@ exports.create = (req, res) => {
   const body = req.body;
   const result = {};
 
-  if (!body) {
+  if (!Object.keys(body).length) {
     res.writeHead(StatusCodes.OK, contentTypes.json);
     result.error = true;
     result.message = "for creating a new book please send data!";

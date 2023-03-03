@@ -6,6 +6,7 @@ const { StatusCodes } = require("http-status-codes");
 
 // MyApp Modules
 const utils = require("./utils");
+const { contentTypes } = require("./content-types");
 
 const routing = {
   GET: {},
@@ -38,7 +39,10 @@ exports.handler = async (req, res) => {
   } catch (error) {
     console.log("ERROR OCCURED", error.message);
     res.writeHead(StatusCodes.NOT_FOUND);
-    res.end("The Page you are looking for is not availabe");
+    return utils.errResponse(
+      res,
+      "The Page you are looking for is not availabe"
+    );
   }
 };
 

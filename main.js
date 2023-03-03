@@ -35,16 +35,15 @@ route.get("/about", (req, res) => {
 });
 
 route.get("/books", bookController.index);
-
 route.put("/books", bookController.update);
-
 route.delete("/books", bookController.delete);
-
 route.post("/books", bookController.create);
 
 route.post("/renting", rentController.create);
 
 route.post("/register", userController.register);
+route.get("/users", userController.index);
+route.get("/user-email", userController.byemail);
 
 const server = http.createServer(route.handler);
 

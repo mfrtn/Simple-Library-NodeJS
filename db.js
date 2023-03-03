@@ -36,7 +36,8 @@ const db = new sqlite3.Database(DBFILENAME, (err) => {
                       FOREIGN KEY (book_id)
                         REFERENCES Books(id),
                       FOREIGN KEY (user_id)
-                        REFERENCES User(id)
+                        REFERENCES Users(id),
+                      UNIQUE (book_id, user_id)
       )`);
     });
   }

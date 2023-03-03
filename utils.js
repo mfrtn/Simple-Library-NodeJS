@@ -41,3 +41,12 @@ exports.parseQueryFromUrl = (query) => {
   }, {});
   return queryObj;
 };
+
+exports.errResponse = (res, errorMessage) => {
+  const result = {
+    error: true,
+    message: errorMessage,
+  };
+
+  return res.json(result);
+};
