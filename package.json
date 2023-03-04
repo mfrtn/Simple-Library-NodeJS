@@ -1,7 +1,7 @@
 {
-  "name": "w1-home",
+  "name": "library",
   "version": "1.0.0",
-  "description": "",
+  "description": "simple library project without express",
   "main": "main.js",
   "scripts": {
     "start": "nodemon main.js",

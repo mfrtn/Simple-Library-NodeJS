@@ -32,13 +32,17 @@ exports.handler = async (req, res) => {
 
     req.body = {};
     if (req.headers["content-type"] === "application/json") {
-      req.body = await utils.parseJsonBody(req);
+      try {
+        req.body = await utils.parseJsonBody(req);
+      } catch (error) {
+        console.log(error.message);
+      }
     }
 
     routing[req.method][req.path](req, res);
   } catch (error) {
     console.log("ERROR OCCURED", error.message);
-    res.writeHead(StatusCodes.NOT_FOUND);
+    res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
     return utils.errResponse(
       res,
       "The Page you are looking for is not availabe"

@@ -1,4 +1,5 @@
 // NodeJS Modules
+const { rejects } = require("assert");
 const fs = require("fs");
 
 // NPM Modules
@@ -17,7 +18,7 @@ exports.getFile = (path, res) => {
 };
 
 exports.parseJsonBody = (req) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let body = [];
     req
       .on("data", (chunk) => {
@@ -25,7 +26,11 @@ exports.parseJsonBody = (req) => {
       })
       .on("end", () => {
         body = Buffer.concat(body).toString();
-        resolve(JSON.parse(body));
+        try {
+          resolve(JSON.parse(body));
+        } catch (error) {
+          reject(error);
+        }
       });
   });
 };
