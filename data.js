@@ -1,6 +1,7 @@
-exports.Books = [
+const db = require("./db");
+
+const booksData = [
   {
-    id: 0,
     isbn: "9781593279509",
     title: "Eloquent JavaScript, Third Edition",
     author: "Marijn Haverbeke",
@@ -10,7 +11,6 @@ exports.Books = [
     pages: 472,
   },
   {
-    id: 1,
     isbn: "9781491943533",
     title: "Practical Modern JavaScript",
     author: "Nicolás Bevacqua",
@@ -20,7 +20,6 @@ exports.Books = [
     pages: 334,
   },
   {
-    id: 2,
     isbn: "9781593277574",
     title: "Understanding ECMAScript 6",
     author: "Nicholas C. Zakas",
@@ -30,7 +29,6 @@ exports.Books = [
     pages: 352,
   },
   {
-    id: 3,
     isbn: "9781449365035",
     title: "Speaking JavaScript",
     author: "Axel Rauschmayer",
@@ -40,7 +38,6 @@ exports.Books = [
     pages: 460,
   },
   {
-    id: 4,
     isbn: "9781449331818",
     title: "Learning JavaScript Design Patterns",
     author: "Addy Osmani",
@@ -50,7 +47,6 @@ exports.Books = [
     pages: 254,
   },
   {
-    id: 5,
     isbn: "9798602477429",
     title: "You Don't Know JS Yet",
     author: "Kyle Simpson",
@@ -60,7 +56,6 @@ exports.Books = [
     pages: 143,
   },
   {
-    id: 6,
     isbn: "9781484200766",
     title: "Pro Git",
     author: "Scott Chacon and Ben Straub",
@@ -70,7 +65,6 @@ exports.Books = [
     pages: 458,
   },
   {
-    id: 7,
     isbn: "9781484242216",
     title: "Rethinking Productivity in Software Engineering",
     author: "Caitlin Sadowski, Thomas Zimmermann",
@@ -81,53 +75,90 @@ exports.Books = [
   },
 ];
 
-exports.Users = [
+const usersData = [
   {
-    id: 0,
     email: "amin@yahoo.com",
     name: "amin",
     password: "",
   },
   {
-    id: 1,
     email: "mohammad@yahoo.com",
     name: "mohammad",
     password: "",
   },
   {
-    id: 2,
     email: "mahtab@yahoo.com",
     name: "mahtab",
     password: "",
   },
   {
-    id: 3,
     email: "raha@yahoo.com",
     name: "raha",
     password: "",
   },
 ];
 
-exports.Renting = [
+const rentingData = [
   {
-    id: 0,
-    book_id: 0,
-    user_id: 0,
-    rent_date: "2023-01-11",
-    rent_days: 5,
-  },
-  {
-    id: 1,
     book_id: 1,
-    user_id: 0,
-    rent_date: "2023-02-01",
+    user_id: 1,
+    rent_date: "2023-01-11T12:32:00.000Z",
     rent_days: 5,
   },
   {
-    id: 2,
+    book_id: 1,
+    user_id: 2,
+    rent_date: "2023-02-01T09:44:00.000Z",
+    rent_days: 5,
+  },
+  {
     book_id: 2,
     user_id: 3,
-    rent_date: "2023-02-10",
+    rent_date: "2023-02-10T14:24:00.000Z",
     rent_days: 5,
   },
 ];
+
+booksData.forEach((book) => {
+  db.run(
+    `INSERT INTO Books(isbn, title, author, stock, published ,publisher, pages) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      book.isbn,
+      book.title,
+      book.author,
+      book.stock,
+      Date.parse(book.published),
+      book.publisher,
+      book.pages,
+    ],
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
+    }
+  );
+});
+
+usersData.forEach((user) => {
+  db.run(
+    `INSERT INTO Users(email, name, password) VALUES (?, ?, ?)`,
+    [user.email, user.name, user.password],
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
+    }
+  );
+});
+
+rentingData.forEach((rent) => {
+  db.run(
+    `INSERT INTO Renting(book_id, user_id, rent_date, rent_days) VALUES (?, ?, ?, ?)`,
+    [rent.book_id, rent.user_id, Date.parse(rent.rent_date), rent.rent_days],
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
+    }
+  );
+});

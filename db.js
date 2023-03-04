@@ -11,10 +11,10 @@ const db = new sqlite3.Database(DBFILENAME, (err) => {
     db.serialize(() => {
       db.run(`CREATE TABLE IF NOT EXISTS Books(
                       id INTEGER PRIMARY KEY,
-                      isbn TEXT NOT NULL,
+                      isbn TEXT NOT NULL UNIQUE,
                       title TEXT NOT NULL,
                       author TEXT,
-                      stock INTEGER,
+                      stock INTEGER NOT NULL,
                       published DATE,
                       publisher TEXT,
                       pages INTEGER

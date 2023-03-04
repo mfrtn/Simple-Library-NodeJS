@@ -4,95 +4,91 @@ const { StatusCodes } = require("http-status-codes");
 // MyApp Modules
 const utils = require("./../utils");
 const { contentTypes } = require("./../content-types");
-const db = require("./../db");
+const userService = require("./user.service");
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   const body = req.body;
-  const result = {};
 
-  if (body.length >= 1) {
-    res.writeHead(StatusCodes.OK, contentTypes.json);
-    result.error = true;
-    result.message = "for creating a new user please send data!";
-    res.json(result);
+  if (!Object.keys(body).length) {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "for creating a new user please send data!");
   } else {
-    const { email, name, password } = body;
-    db.run(
-      `INSERT INTO Users(email, name, password) VALUES (?, ?, ?)`,
-      [email, name, password],
-      (error) => {
-        if (error) {
-          res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
-          return utils.errResponse(res, error.message);
-        }
-      }
-    );
-    res.writeHead(StatusCodes.CREATED, contentTypes.json);
-    res.json({ email, name });
+    try {
+      const newUserObject = await userService.store(body);
+      res.writeHead(StatusCodes.CREATED, contentTypes.json);
+      res.json(newUserObject);
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
   }
 };
 
-function findUserByEmail(email) {
-  return new Promise((resolve, reject) => {
-    db.get(
-      "SELECT id, email, name FROM Users WHERE email = ?",
-      email,
-      (err, user) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (!user) {
-            reject(reject(`User not found with email: ${email}`));
-          }
-          resolve(user);
-        }
-      }
-    );
-  });
-}
-
-exports.byemail = (req, res) => {
+exports.getUserByEmail = async (req, res) => {
   if (req.query) {
     const email = req.query.email;
-    findUserByEmail(email)
-      .then((resolve) => {
-        console.log(resolve);
-        res.json(resolve);
-      })
-      .catch((error) => {
-        console.log(error);
-        return utils.errResponse(res, error);
-      });
+    try {
+      const userObject = await userService.getUserByEmail(email);
+      if (!userObject) {
+        res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+        return utils.errResponse(
+          res,
+          `There is no user with this email: ${email}`
+        );
+      }
+      res.writeHead(StatusCodes.OK, contentTypes.json);
+      res.json(userObject);
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
   } else {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
     return utils.errResponse(res, "add email to query params");
   }
 };
 
-exports.index = (req, res) => {
+exports.index = async (req, res) => {
   if (req.query) {
     const id = parseInt(req.query.id);
-
-    db.get(
-      "SELECT id, email, name FROM Users WHERE id = ?",
-      id,
-      (err, user) => {
-        if (err) {
-          throw new Error(err.message);
-        } else {
-          if (!user) {
-            return utils.errResponse(res, `User not found with id: ${id}`);
-          }
-          return res.json(user);
-        }
+    try {
+      const userObject = await userService.getUserbyID(id);
+      if (!userObject) {
+        res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+        return utils.errResponse(res, `There is no user with this id:${id}`);
       }
-    );
+      res.writeHead(StatusCodes.OK, contentTypes.json);
+      res.json(userObject);
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
   } else {
-    db.all("SELECT id, email, name FROM Users", (err, data) => {
-      if (err) {
-        throw new Error(err.message);
-      } else {
-        return res.json(data);
-      }
-    });
+    try {
+      const userObjects = await userService.getAllUsers();
+      res.writeHead(StatusCodes.OK, contentTypes.json);
+      res.json(userObjects);
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
+  }
+};
+
+exports.ShowUserBookByEmail = async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "please send user email");
+  } else {
+    try {
+      const userObject = await userService.getAllBookRentByUserEmail(email);
+      res.writeHead(StatusCodes.OK, contentTypes.json);
+      res.json(userObject);
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
   }
 };

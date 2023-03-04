@@ -4,78 +4,93 @@ const { StatusCodes } = require("http-status-codes");
 // MyApp Modules
 const utils = require("./../utils");
 const { contentTypes } = require("./../content-types");
-const db = require("./../db");
+const rentService = require("./rent.service");
+const userService = require("./user.service");
+const bookService = require("./book.service");
 
 //TODO Check User Renting Count
 
-exports.create = (req, res) => {
+exports.store = async (req, res) => {
   const body = req.body;
   if (!Object.keys(body).length) {
-    errorMessage = "for creating a new renting please send data!";
-    return utils.errResponse(res, errorMessage);
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(
+      res,
+      "for creating a new renting please send data!"
+    );
   } else {
-    const { book_id, user_id, rent_date, rent_days } = body;
-
-    // db.get(
-    //   "SELECT id, email, name FROM Users WHERE id = ?",
-    //   id,
-    //   (err, data) => {
-    //     if (err) {
-    //       throw new Error(err.message);
-    //     } else {
-    //       if (!data) {
-    //         return utils.errResponse(res, `User not found with id: ${id}`);
-    //       }
-    //       return res.json(data);
-    //     }
-    //   }
-    // );
-    db.get(
-      "SELECT COUNT(user_id) as user_id_count FROM Renting  WHERE user_id = ?",
-      user_id,
-      (error, data) => {
-        if (error) {
-          console.log(error);
+    try {
+      //---- find book with book_id ----
+      const bookObject = await bookService.getBookbyID(parseInt(body.book_id));
+      if (!bookObject) {
+        res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+        return utils.errResponse(
+          res,
+          `There is no book with this id:${body.book_id}`
+        );
+      } else {
+        // Check if book resource is engouh
+        const countBookRent = await rentService.countBookRentbyID(
+          parseInt(body.book_id)
+        );
+        if (bookObject.stock - countBookRent < 1) {
+          res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+          return utils.errResponse(
+            res,
+            "There is not enough resource for renting this book"
+          );
         } else {
-          console.log(data.user_id_count);
+          //---- find user with user_id ----
+          const userObject = await userService.getUserbyID(
+            parseInt(body.user_id)
+          );
+          if (!userObject) {
+            res.writeHead(StatusCodes.NOT_FOUND, contentTypes.json);
+            return utils.errResponse(
+              res,
+              `There is no user with this id:${body.user_id}`
+            );
+          } else {
+            //---- Check user currnet renting count ----
+            const countUserRent = await rentService.countUserRentbyID(
+              parseInt(body.user_id)
+            );
+            if (countUserRent >= 3) {
+              res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+              return utils.errResponse(
+                res,
+                "Sorry, You reached maximum renting count"
+              );
+            } else {
+              //---- Store New Renting Object in Database ----
+              const newRentingObject = await rentService.store(body);
+              res.writeHead(StatusCodes.CREATED, contentTypes.json);
+              res.json(newRentingObject);
+            }
+          }
         }
       }
-    );
-    db.run(
-      `INSERT INTO Renting(book_id, user_id, rent_date, rent_days) VALUES (?, ?, ?, ?)`,
-      [book_id, user_id, rent_date, rent_days],
-      (error) => {
-        if (error) {
-          return utils.errResponse(res, error.message);
-        }
-      }
-    );
-
-    res.writeHead(StatusCodes.OK, contentTypes.json);
-    res.end("ok");
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
   }
 };
 
-// exports.create = (req, res) => {
-//   const body = req.body;
-//   const result = {};
+exports.destroy = async (req, res) => {
+  const id = req.query.id;
 
-//   if (!body) {
-//     res.writeHead(StatusCodes.OK, contentTypes.json);
-//     result.error = true;
-//     result.message = "for creating a new renting please send data!";
-//     res.json(result);
-//   } else {
-//     const { book_id, user_id, rent_date, rent_days } = body;
-//     const rent = {
-//       id: data.Renting.length,
-//       book_id: book_id,
-//       user_id: user_id,
-//       rent_date: rent_date,
-//       rent_days: rent_days,
-//     };
-//     data.Renting.push(rent);
-//     res.writeHead(StatusCodes.OK, contentTypes.json);
-//     res.json(rent);
-//   }
-// };
+  if (!id) {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "for delete a rentig please send rent id!");
+  } else {
+    try {
+      await rentService.destroy(parseInt(id));
+      res.writeHead(StatusCodes.NO_CONTENT, contentTypes.json);
+      return res.end("ok");
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
+  }
+};
