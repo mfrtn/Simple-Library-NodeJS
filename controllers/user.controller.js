@@ -84,12 +84,8 @@ exports.index = async (req, res) => {
 };
 
 exports.ShowUserBookByEmail = async (req, res) => {
-  const email = req.query.email;
-
-  if (!email) {
-    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
-    return utils.errResponse(res, "please send user email");
-  } else {
+  if (req.query) {
+    const email = req.query.email;
     try {
       const userObject = await userService.getAllBookRentByUserEmail(email);
 
@@ -106,5 +102,8 @@ exports.ShowUserBookByEmail = async (req, res) => {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
       return utils.errResponse(res, error.message);
     }
+  } else {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "add email to query params");
   }
 };

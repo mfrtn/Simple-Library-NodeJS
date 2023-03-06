@@ -41,6 +41,7 @@ route.post("/books", bookController.store);
 
 route.post("/renting", rentController.store);
 route.delete("/renting", rentController.destroy);
+route.get("/returnbook", rentController.returnBook);
 
 route.post("/register", userController.register);
 route.get("/users", userController.index);

@@ -64,7 +64,7 @@ function store(body) {
 function getAllBookRentByUserEmail(email) {
   return new Promise((resolve, reject) => {
     db.all(
-      "SELECT book_id , Books.title, Books.isbn, Books.author, Books.pages, rent_date, rent_days FROM Renting INNER JOIN Users ON Renting.user_id = Users.id INNER JOIN Books ON Renting.book_id = Books.id WHERE email = ?",
+      "SELECT Renting.id as rent_id, book_id , Books.title, Books.isbn, Books.author, Books.pages, rent_date, rent_days FROM Renting INNER JOIN Users ON Renting.user_id = Users.id INNER JOIN Books ON Renting.book_id = Books.id WHERE email = ?",
       email,
       (err, data) => {
         if (err) {

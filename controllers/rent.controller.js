@@ -78,12 +78,8 @@ exports.store = async (req, res) => {
 };
 
 exports.destroy = async (req, res) => {
-  const id = req.query.id;
-
-  if (!id) {
-    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
-    return utils.errResponse(res, "for delete a rentig please send rent id!");
-  } else {
+  if (req.query) {
+    const id = req.query.id;
     try {
       await rentService.destroy(parseInt(id));
       res.writeHead(StatusCodes.NO_CONTENT, contentTypes.json);
@@ -92,5 +88,25 @@ exports.destroy = async (req, res) => {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
       return utils.errResponse(res, error.message);
     }
+  } else {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "for delete a rentig please send rent id!");
+  }
+};
+
+exports.returnBook = async (req, res) => {
+  if (req.query) {
+    const id = req.query.id;
+    try {
+      await rentService.destroy(parseInt(id));
+      res.writeHead(StatusCodes.NO_CONTENT, contentTypes.json);
+      return res.end("ok");
+    } catch (error) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
+      return utils.errResponse(res, error.message);
+    }
+  } else {
+    res.writeHead(StatusCodes.NOT_ACCEPTABLE, contentTypes.json);
+    return utils.errResponse(res, "for delete a rentig please send rent id!");
   }
 };

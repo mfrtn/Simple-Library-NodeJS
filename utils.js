@@ -88,6 +88,10 @@ exports.getFile = (path, res, objects, flag) => {
 
             returnDate.setDate(rentDate.getDate() + parseInt(value.rent_days));
             rentDate.setHours(0, 0, 0, 0);
+
+            let returnForm =
+              '<a href="/returnbook?id=' + value.rent_id + '">Return</a>';
+
             output += `<tr>
             <td>${value.book_id}</td>
             <td>${value.title}</td>
@@ -95,7 +99,7 @@ exports.getFile = (path, res, objects, flag) => {
             <td>${rentDate.toDateString()}</td>
             <td>${value.rent_days}</td>
             <td>${returnDate.toDateString()}</td>
-            <td>${today > returnDate ? "Return" : "Keep"}</td>
+            <td>${today < returnDate ? "Keep" : returnForm}</td>
           </tr>\n`;
           }
 
@@ -111,18 +115,9 @@ exports.getFile = (path, res, objects, flag) => {
   });
 };
 
-exports.parseFileBooksHTML = (path, res, objects) => {
-  fs.readFile(path, (err, html) => {
-    if (err) {
-      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR);
-      res.end(err);
-    }
-  });
-};
-
 exports.parseJsonBody = (req) => {
+  let body = [];
   return new Promise((resolve, reject) => {
-    let body = [];
     req
       .on("data", (chunk) => {
         body.push(chunk);
