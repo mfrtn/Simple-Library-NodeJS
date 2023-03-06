@@ -29,16 +29,16 @@ exports.handler = async (req, res) => {
     res.json = (data) => {
       utils.jsonSerialize(data, res);
     };
-
+    req.isJson =
+      req.headers["content-type"] === "application/json" ? true : false;
     req.body = {};
-    if (req.headers["content-type"] === "application/json") {
+    if (req.isJson) {
       try {
         req.body = await utils.parseJsonBody(req);
       } catch (error) {
         console.log(error.message);
       }
     }
-
     routing[req.method][req.path](req, res);
   } catch (error) {
     console.log("ERROR OCCURED", error.message);

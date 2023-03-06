@@ -1,18 +1,62 @@
 // NodeJS Modules
-const { rejects } = require("assert");
 const fs = require("fs");
 
 // NPM Modules
 const { StatusCodes } = require("http-status-codes");
-const { resolve } = require("path");
+const parse = require("node-html-parser").parse;
 
-exports.getFile = (path, res) => {
-  fs.readFile(path, (err, data) => {
+exports.getFile = (path, res, objects, flag) => {
+  fs.readFile(path, (err, html) => {
     if (err) {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR);
       res.end(err);
     } else {
-      res.end(data);
+      if (objects) {
+        if (flag === "books") {
+          const document = parse(html);
+
+          let output = `<tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publisher</th>
+            <th>Pages</th>
+            <th>Stock</th>
+            <th>Rented</th>
+            <th>Remain</th>
+          </tr>\n`;
+
+          for (const value of objects) {
+            const remain = value.stock - value.rentCount;
+            if (remain <= 0) {
+              continue;
+            }
+            output += `<tr>
+              <td>${value.title}</td>
+              <td>${value.author}</td>
+              <td>${value.publisher}</td>
+              <td>${value.pages}</td>
+              <td>${value.stock}</td>
+              <td>${value.rentCount}</td>
+              <td>${remain}</td>
+            </tr>\n`;
+          }
+
+          document.getElementById("table1").innerHTML = output;
+
+          res.end(document.toString());
+        }
+      } else {
+        res.end(html);
+      }
+    }
+  });
+};
+
+exports.parseFileBooksHTML = (path, res, objects) => {
+  fs.readFile(path, (err, html) => {
+    if (err) {
+      res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR);
+      res.end(err);
     }
   });
 };

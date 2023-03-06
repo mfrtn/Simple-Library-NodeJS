@@ -1,5 +1,5 @@
 {
-  "name": "library",
+  "name": "library-nodejs",
   "version": "1.0.0",
   "description": "simple library project without express",
   "main": "main.js",
@@ -8,13 +8,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Mohammad Foroutan",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
   "dependencies": {
     "http-status-codes": "^2.2.0",
+    "node-html-parser": "^6.1.5",
     "sqlite3": "^5.1.4"
   }
 }

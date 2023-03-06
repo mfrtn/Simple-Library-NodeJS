@@ -5,6 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 const utils = require("./../utils");
 const { contentTypes } = require("./../content-types");
 const bookService = require("./book.service");
+const rentService = require("./rent.service");
 
 exports.index = async (req, res) => {
   if (req.query) {
@@ -25,7 +26,17 @@ exports.index = async (req, res) => {
     try {
       const bookObjects = await bookService.getAllBooks();
       res.writeHead(StatusCodes.OK, contentTypes.json);
-      res.json(bookObjects);
+      if (req.isJson) {
+        return res.json(bookObjects);
+      } else {
+        for (const iterator of bookObjects) {
+          iterator.rentCount = await rentService.countBookRentbyID(iterator.id);
+        }
+        const path = "./views/books/index.html";
+
+        res.writeHead(StatusCodes.OK, contentTypes.html);
+        utils.getFile(path, res, bookObjects, "books");
+      }
     } catch (error) {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
       return utils.errResponse(res, error.message);
