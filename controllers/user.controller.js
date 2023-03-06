@@ -66,8 +66,16 @@ exports.index = async (req, res) => {
   } else {
     try {
       const userObjects = await userService.getAllUsers();
-      res.writeHead(StatusCodes.OK, contentTypes.json);
-      res.json(userObjects);
+
+      if (req.isJson) {
+        res.writeHead(StatusCodes.OK, contentTypes.json);
+        return res.json(userObjects);
+      } else {
+        const path = "./views/users/index.html";
+
+        res.writeHead(StatusCodes.OK, contentTypes.html);
+        utils.getFile(path, res, userObjects, "users");
+      }
     } catch (error) {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
       return utils.errResponse(res, error.message);
@@ -84,8 +92,16 @@ exports.ShowUserBookByEmail = async (req, res) => {
   } else {
     try {
       const userObject = await userService.getAllBookRentByUserEmail(email);
-      res.writeHead(StatusCodes.OK, contentTypes.json);
-      res.json(userObject);
+
+      if (req.isJson) {
+        res.writeHead(StatusCodes.OK, contentTypes.json);
+        res.json(userObject);
+      } else {
+        const path = "./views/profile/index.html";
+
+        res.writeHead(StatusCodes.OK, contentTypes.html);
+        utils.getFile(path, res, userObject, "profile");
+      }
     } catch (error) {
       res.writeHead(StatusCodes.INTERNAL_SERVER_ERROR, contentTypes.json);
       return utils.errResponse(res, error.message);

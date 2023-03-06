@@ -34,7 +34,7 @@ function getUserbyID(id) {
 
 function getAllUsers() {
   return new Promise((resolve, reject) => {
-    db.all("SELECT email, name FROM Users ", (err, users) => {
+    db.all("SELECT id, email, name FROM Users ", (err, users) => {
       if (err) {
         reject(err);
       } else {

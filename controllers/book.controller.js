@@ -25,8 +25,8 @@ exports.index = async (req, res) => {
   } else {
     try {
       const bookObjects = await bookService.getAllBooks();
-      res.writeHead(StatusCodes.OK, contentTypes.json);
       if (req.isJson) {
+        res.writeHead(StatusCodes.OK, contentTypes.json);
         return res.json(bookObjects);
       } else {
         for (const iterator of bookObjects) {

@@ -1,7 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <title>Library</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      /* Style the header */
+      header {
+        background-color: #666;
+        padding: 5px;
+        text-align: center;
+        font-size: 15px;
+        color: white;
+      }
+
+      /* Create two columns/boxes that floats next to each other */
+      nav {
+        float: left;
+        width: 15%;
+        height: 300px; /* only for demonstration, should be removed */
+        background: #ccc;
+        padding: 20px;
+      }
+
+      /* Style the list inside the menu */
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      article {
+        float: left;
+        padding: 20px;
+        width: 85%;
+        background-color: #f1f1f1;
+        height: 300px; /* only for demonstration, should be removed */
+      }
+
+      /* Clear floats after the columns */
+      section::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      /* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+      @media (max-width: 600px) {
+        nav,
+        article {
+          width: 100%;
+          height: auto;
+        }
+      }
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
@@ -21,24 +79,29 @@
     </style>
   </head>
   <body>
-    <h2>Books List</h2>
+    <header>
+      <h2>Library Project</h2>
+      <h3>Books List</h3>
+    </header>
 
-    <table id="table1">
-      <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>publisher</th>
-      </tr>
-      <tr>
-        <td>sdfs</td>
-        <td>sdfs</td>
-        <td>sdfs</td>
-      </tr>
-      <tr>
-        <td>sdfs</td>
-        <td>sdfs</td>
-        <td>sdfs</td>
-      </tr>
-    </table>
+    <section>
+      <nav>
+        <ul>
+          <li>
+            <a href="/">HOME</a>
+          </li>
+          <li>
+            <a href="/books">Show All Books</a>
+          </li>
+          <li>
+            <a href="/users">Show All Users</a>
+          </li>
+        </ul>
+      </nav>
+
+      <article>
+        <table id="table1"></table>
+      </article>
+    </section>
   </body>
 </html>

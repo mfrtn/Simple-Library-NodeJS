@@ -5,7 +5,12 @@ function store(body) {
   return new Promise((resolve, reject) => {
     db.run(
       `INSERT INTO Renting(book_id, user_id, rent_date, rent_days) VALUES (?, ?, ?, ?)`,
-      [book_id, user_id, Date.parse(rent_date), rent_days],
+      [
+        book_id,
+        user_id,
+        rent_date ? Date.parse(rent_date) : new Date(),
+        rent_days,
+      ],
       (err) => {
         if (err) {
           reject(err);
